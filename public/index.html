@@ -2,11 +2,57 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=1, initial-scale=1.0">
     <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
     <div>Hello from the other side</div>
-    
+    <div class="flex justify-center items-center h-screen">
+        <div class="card w-96 shadow-md bg-base-200">
+            <div class="card-body">
+                <form id="item-form">
+                   <label class="form-control">
+                        <div class="label">
+                            <h1 class="label-text">Item</h1>
+                        </div>
+                        <input type="text" class="input input-bordered" id="item-input">
+                   </label>
+                   <button class="btn btn-primary mt-3 btn-block">Add</button>
+                </form>
+                <ul id="item-list">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script>
+        const form = document.querySelector("#item-form");
+        const input = document.querySelector("#item-input")
+        const list = document.querySelector("#item-list")
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const item = input.value.trim();
+            if (item) {
+                await fetch ('/items', {
+                    method : 'POST',
+                    headers : { 'Content-Type' : 'application/json'},
+                    body: JSON.stringify({item})
+                });
+                input.value = '';
+                loadItems();
+            }
+            
+        });
+
+        const loadItems = async () => {
+            const response = await fetch('/items');
+            const items = await response.json();
+            list.innerHTML = items.map((item) => `<li>${item}</li>`).join('');
+        }
+
+        loadItems();
+    </script>
 </body>
 </html>
